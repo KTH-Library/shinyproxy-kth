@@ -18,7 +18,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ghcr.io/${{ github.repository_owner }}/ansible-vault
+          ghcr.io/${{ github.repository_owner }}/shinyproxy-kth
         tags: |
           type=raw,value=1.0.${{ github.run_number }},priority=1000
           type=ref,event=branch
@@ -44,6 +44,5 @@ jobs:
         context: .
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        push: true    
-    
+        push: true
         
