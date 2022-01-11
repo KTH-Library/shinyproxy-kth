@@ -18,7 +18,7 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         images: |
-          ${{ github.repository_owner }}/shinyproxy-kth
+          ghcr.io/${{ github.repository_owner }}/shinyproxy-kth
         tags: |
           type=raw,value=1.0.${{ github.run_number }},priority=1000
           type=ref,event=branch
@@ -62,4 +62,12 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         push: true
 
+#    - # https://github.com/docker/build-push-action/blob/master/docs/advanced/copy-between-registries.md
+#      name: Push Image to multiple registries
+#      uses: akhilerm/tag-push-action@v2.0.0
+#      with:
+#        src: ghcr.io/${{ github.repository_owner }}/shinyproxy-kth:latest
+#        dst: |
+#          kthregistry.azurecr.io/${{ github.repository_owner }}/shinyproxy-kth:latest
+#          kth-library/shinyproxy-kth:latest
 
