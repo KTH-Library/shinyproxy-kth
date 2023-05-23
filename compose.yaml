@@ -1,0 +1,84 @@
+services:
+
+  traefik:
+    image: traefik:v2.5.5
+    init: true
+    command: >
+      --ping=true
+      --ping.manualrouting=true
+      --providers.docker=true
+      --providers.docker.defaultRule="Host(`{{ trimPrefix `/` .Name }}.docker.localhost`)"
+      --providers.docker.exposedbydefault=false
+      --entrypoints.web.address=:80
+      --entrypoints.websecure.address=:443
+      --entrypoints.web.http.redirections.entryPoint.to=websecure
+      --entrypoints.web.http.redirections.entryPoint.scheme=https
+      --entrypoints.web.http.redirections.entryPoint.permanent=true
+      --api.dashboard=true
+      --api.insecure=false
+      --providers.file.directory=/etc/traefik/dynamic
+      --log.level=INFO
+    ports:
+      - 80:80
+      - 443:443
+#      - "8088:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./certs-traefik.yml:/etc/traefik/dynamic/certs-traefik.yaml"
+      - "$HOME/certs:/etc/certs/:ro"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ping.entrypoints=websecure"
+      - "traefik.http.routers.ping.rule=Host(`shiny-1-r.referens.sys.kth.se`) && Path(`/abm`)"
+      - "traefik.http.routers.ping.tls=true"
+      - "traefik.http.routers.ping.service=ping@internal"
+      - "traefik.http.routers.dashboard.rule=PathPrefix(`/api`) || PathPrefix(`/dashboard`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.tls=true"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.middlewares=auth"
+      - "traefik.http.middlewares.auth.basicauth.users=traefik:$$apr1$$flsdtktL$$WwmhUKZ5y7aMNItAVQoZF0"
+      - "traefik.providers.docker.network=sp-net"
+    restart: always
+
+  shinyproxy:
+    image: ghcr.io/kth-library/shinyproxy-kth
+#    ports:
+#      - "8080:8080"
+    env_file: 
+      - ./env/.shinyproxyenvkth
+    volumes:
+      - ./application-auth0.yml:/opt/shinyproxy/application.tmp
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./logs:/opt/shinyproxy/container-logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shinyproxy.rule=Host(`www-r.referens.sys.kth.se`)"
+      - "traefik.http.routers.shinyproxy.entrypoints=websecure"
+      - "traefik.http.routers.shinyproxy.tls=true"
+      - "traefik.http.services.shinyproxy.loadbalancer.server.port=8080"
+    restart: always
+
+  public:
+    image: ghcr.io/kth-library/shinyproxy-kth
+#    image: kthb/shinyproxy:2.6.0
+#    ports:
+#      - "8081:8080"
+    env_file: 
+      - ./env/.shinyproxyenvkth
+    volumes:
+      - ./application-noauth.yml:/opt/shinyproxy/application.tmp
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./logs:/opt/shinyproxy/container-logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.public.rule=Host(`www-r.referens.sys.kth.se`) && PathPrefix(`/abm/public`)"
+      - "traefik.http.routers.public.entrypoints=websecure"
+      - "traefik.http.routers.public.tls=true"
+      - "traefik.http.services.public.loadbalancer.server.port=8080"
+    restart: always
+
+networks:
+  default:
+    name: sp-net
+
