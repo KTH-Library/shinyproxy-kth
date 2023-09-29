@@ -12,17 +12,29 @@ jobs:
     -
       name: Checkout
       uses: actions/checkout@v4
-    -
-      name: Free disk space on Ubuntu Runner 🔧
+    - name: manually remove gcloud
+      shell: bash
+      run: sudo apt-get remove google-cloud-cli
+    - name: same as 'large-packages' but without 'google-cloud-sdk'
+      shell: bash
+      run: |
+        sudo apt-get remove -y '^dotnet-.*'
+        sudo apt-get remove -y '^llvm-.*'
+        sudo apt-get remove -y 'php.*'
+        sudo apt-get remove -y '^mongodb-.*'
+        sudo apt-get remove -y '^mysql-.*'
+        sudo apt-get remove -y azure-cli google-chrome-stable firefox powershell mono-devel libgl1-mesa-dri
+        sudo apt-get autoremove -y
+        sudo apt-get clean
+    - name: Free Disk Space
       uses: jlumbroso/free-disk-space@main
       with:
-        # frees about 6 GB, warning: may remove required tools
-        tool-cache: false
+        tool-cache: true
         android: true
         dotnet: true
         haskell: true
-        large-packages: true
-        swap-storage: true
+        large-packages: false
+        swap-storage: false
     -
       name: Docker meta
       id: meta
@@ -72,8 +84,8 @@ jobs:
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+#        cache-from: type=gha
+#        cache-to: type=gha,mode=max
 
 #    - # https://github.com/docker/build-push-action/blob/master/docs/advanced/copy-between-registries.md
 #      name: Push Image to multiple registries
