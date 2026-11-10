@@ -20,9 +20,58 @@ proxy:
     container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
     container-image: openanalytics/shinyproxy-demo
     container-env:
-      SHINYPROXY_DISPLAY_NAME: "#{oidcUser.attributes['unique_name'] instanceof T(java.util.List) ? oidcUser.attributes['unique_name'].get(0) : oidcUser.attributes['unique_name']}"
-      SHINYPROXY_AFFILIATION: "#{T(java.lang.String).join(',', oidcUser.attributes['affiliation'])}"
-      SHINYPROXY_MEMBER_OF: "#{T(java.lang.String).join(',', oidcUser.attributes['memberOf'])}"
+      SHINYPROXY_KTH_USERID: "#{oidcUser.attributes['kthid']}"
+      SHINYPROXY_KTH_USERNAME: "#{oidcUser.attributes['unique_name'] instanceof T(java.util.List) ? oidcUser.attributes['unique_name'].get(0) : oidcUser.attributes['unique_name']}"
+#      SHINYPROXY_KTH_DISPLAY_NAME: "#{oidcUser.attributes['unique_name'] instanceof T(java.util.List) ? oidcUser.attributes['unique_name'].get(0) : oidcUser.attributes['unique_name']}"
+      SHINYPROXY_KTH_EMAIL: "#{oidcUser.attributes.email}"
+      SHINYPROXY_KTH_AFFILIATION: "#{T(java.lang.String).join(',', oidcUser.attributes['affiliation'])}"
+      SHINYPROXY_KTH_MEMBER_OF: "#{T(java.lang.String).join(',', oidcUser.attributes['memberOf'])}"
+      SHINYPROXY_CONTAINER_IMAGE: "#{proxy.containers[0].getRuntimeValue('SHINYPROXY_CONTAINER_IMAGE')}"
+      SHINYPROXY_CONTAINER_INDEX: "#{proxy.containers[0].getRuntimeValue('SHINYPROXY_CONTAINER_INDEX')}"
+      SHINYPROXY_CREATED_TIMESTAMP: "#{proxy.getRuntimeValue('SHINYPROXY_CREATED_TIMESTAMP')}"
+      # SHINYPROXY_USERGROUPS is auto-injected by ShinyProxy from roles-claim
+#      SHINYPROXY_OIDC_SUB: "#{oidcUser.attributes.sub}"
+#      SHINYPROXY_OIDC_CLAIMS: "#{oidcUser.accessTokenAsJwt.claims}"
+#      SHINYPROXY_PROXY_ID: "#{proxy.getRuntimeValue('SHINYPROXY_PROXY_ID')}"
+#      SHINYPROXY_APP_INSTANCE: "#{proxy.getRuntimeValue('SHINYPROXY_APP_INSTANCE')}"  # shows "_"
+#      SHINYPROXY_DISPLAY_NAME: "#{proxy.getRuntimeValue('SHINYPROXY_DISPLAY_NAME')}"  # app display name, not user
+#      SHINYPROXY_FORCE_FULL_RELOAD: "#{proxy.getRuntimeValue('SHINYPROXY_FORCE_FULL_RELOAD')}"
+#      SHINYPROXY_HEARTBEAT_TIMEOUT: "#{proxy.getRuntimeValue('SHINYPROXY_HEARTBEAT_TIMEOUT')}"
+#      SHINYPROXY_PORT_MAPPINGS: "#{proxy.containers[0].getRuntimeValue('SHINYPROXY_PORT_MAPPINGS')}"
+#      SHINYPROXY_PUBLIC_PATH: "#{proxy.getRuntimeValue('SHINYPROXY_PUBLIC_PATH')}"  # internal path only
+#      SHINYPROXY_TRACK_APP_URL: "#{proxy.getRuntimeValue('SHINYPROXY_TRACK_APP_URL')}"  # boolean False
+#      SHINYPROXY_WEBSOCKET_RECONNECTION_MODE: "#{proxy.getRuntimeValue('SHINYPROXY_WEBSOCKET_RECONNECTION_MODE')}"
+#      SHINYPROXY_OIDC_ID_TOKEN: "#{oidcUser.idToken.tokenValue}"
+#      SHINYPROXY_OIDC_REFRESH_TOKEN: "#{oidcUser.refreshToken}"
+  - id: env_demo
+    display-name: Env Demo
+    container-cmd: ["R", "-e", "shiny::runApp('/srv/app', host='0.0.0.0', port=3838)"]
+    container-image: openanalytics/shinyproxy-demo
+    container-volumes: ["/home/markus/repos/shinyproxy-kth/apps/env-demo:/srv/app:ro"]
+    container-env:
+      SHINYPROXY_KTH_USERID: "#{oidcUser.attributes['kthid']}"
+      SHINYPROXY_KTH_USERNAME: "#{oidcUser.attributes['unique_name'] instanceof T(java.util.List) ? oidcUser.attributes['unique_name'].get(0) : oidcUser.attributes['unique_name']}"
+      SHINYPROXY_KTH_DISPLAY_NAME: "#{oidcUser.attributes['unique_name'] instanceof T(java.util.List) ? oidcUser.attributes['unique_name'].get(0) : oidcUser.attributes['unique_name']}"
+      SHINYPROXY_KTH_EMAIL: "#{oidcUser.attributes.email}"
+      SHINYPROXY_KTH_AFFILIATION: "#{T(java.lang.String).join(',', oidcUser.attributes['affiliation'])}"
+      SHINYPROXY_KTH_MEMBER_OF: "#{T(java.lang.String).join(',', oidcUser.attributes['memberOf'])}"
+      SHINYPROXY_CONTAINER_IMAGE: "#{proxy.containers[0].getRuntimeValue('SHINYPROXY_CONTAINER_IMAGE')}"
+      SHINYPROXY_CONTAINER_INDEX: "#{proxy.containers[0].getRuntimeValue('SHINYPROXY_CONTAINER_INDEX')}"
+      SHINYPROXY_CREATED_TIMESTAMP: "#{proxy.getRuntimeValue('SHINYPROXY_CREATED_TIMESTAMP')}"
+      # SHINYPROXY_USERGROUPS is auto-injected by ShinyProxy from roles-claim
+#      SHINYPROXY_OIDC_SUB: "#{oidcUser.attributes.sub}"
+#      SHINYPROXY_OIDC_CLAIMS: "#{oidcUser.accessTokenAsJwt.claims}"
+#      SHINYPROXY_PROXY_ID: "#{proxy.getRuntimeValue('SHINYPROXY_PROXY_ID')}"
+#      SHINYPROXY_APP_INSTANCE: "#{proxy.getRuntimeValue('SHINYPROXY_APP_INSTANCE')}"  # shows "_"
+#      SHINYPROXY_DISPLAY_NAME: "#{proxy.getRuntimeValue('SHINYPROXY_DISPLAY_NAME')}"  # app display name, not user
+#      SHINYPROXY_FORCE_FULL_RELOAD: "#{proxy.getRuntimeValue('SHINYPROXY_FORCE_FULL_RELOAD')}"
+#      SHINYPROXY_HEARTBEAT_TIMEOUT: "#{proxy.getRuntimeValue('SHINYPROXY_HEARTBEAT_TIMEOUT')}"
+#      SHINYPROXY_PORT_MAPPINGS: "#{proxy.containers[0].getRuntimeValue('SHINYPROXY_PORT_MAPPINGS')}"
+#      SHINYPROXY_PUBLIC_PATH: "#{proxy.getRuntimeValue('SHINYPROXY_PUBLIC_PATH')}"  # internal path only
+#      SHINYPROXY_TRACK_APP_URL: "#{proxy.getRuntimeValue('SHINYPROXY_TRACK_APP_URL')}"  # boolean False
+#      SHINYPROXY_WEBSOCKET_RECONNECTION_MODE: "#{proxy.getRuntimeValue('SHINYPROXY_WEBSOCKET_RECONNECTION_MODE')}"
+#      SHINYPROXY_OIDC_ID_TOKEN: "#{oidcUser.idToken.tokenValue}"
+#      SHINYPROXY_OIDC_REFRESH_TOKEN: "#{oidcUser.refreshToken}"
 
 logging:
   file:
