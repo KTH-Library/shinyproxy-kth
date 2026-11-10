@@ -1,5 +1,6 @@
 proxy:
   title: Open Analytics Shiny Proxy
+  favicon-path: /opt/shinyproxy/favicon.ico
   logo-url: https://www.openanalytics.eu/shinyproxy/logo.png
   port: 8080
   authentication: simple

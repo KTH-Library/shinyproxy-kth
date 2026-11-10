@@ -1,0 +1,29 @@
+proxy:
+  title: KTH ShinyProxy
+  port: 8080
+  favicon-path: /opt/shinyproxy/favicon.ico
+  app-base-url: http://localhost:8080
+  authentication: openid
+  openid:
+    auth-url: ${OIDC_AUTH_URL}
+    token-url: ${OIDC_TOKEN_URL}
+    jwks-url: ${OIDC_JWKS_URL}
+    client-id: ${OIDC_CLIENT_ID}
+    client-secret: ${OIDC_CLIENT_SECRET}
+    username-attribute: kthid
+    roles-claim: memberOf
+  docker:
+    internal-networking: false
+  specs:
+  - id: 01_hello
+    display-name: Hello Application
+    container-cmd: ["R", "-e", "shinyproxy::run_01_hello()"]
+    container-image: openanalytics/shinyproxy-demo
+    container-env:
+      SHINYPROXY_DISPLAY_NAME: "#{oidcUser.attributes['unique_name'] instanceof T(java.util.List) ? oidcUser.attributes['unique_name'].get(0) : oidcUser.attributes['unique_name']}"
+      SHINYPROXY_AFFILIATION: "#{T(java.lang.String).join(',', oidcUser.attributes['affiliation'])}"
+      SHINYPROXY_MEMBER_OF: "#{T(java.lang.String).join(',', oidcUser.attributes['memberOf'])}"
+
+logging:
+  file:
+    shinyproxy.log
