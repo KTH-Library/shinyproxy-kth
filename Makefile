@@ -1,7 +1,9 @@
 #! make
 
+VERSION := $(shell grep 'ARG SHINYPROXY_VERSION=' Dockerfile | cut -d= -f2)
+
 build:
-	docker build -t shinyproxy .
+	docker build -t shinyproxy-kth:$(VERSION) .
 
 test: clean
 	docker network create sp-example-net

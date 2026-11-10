@@ -19,4 +19,4 @@ VOLUME $CONFIG_DIR
 
 COPY favicon.ico /opt/shinyproxy/favicon.ico
 
-CMD ["java",  "-jar", "shinyproxy.jar", "--spring.jmx.enabled=false", "--spring.config.location=/opt/shinyproxy/application.yml"]
+CMD ["java", "-Dsun.net.inetaddr.ttl=5", "-XX:MaxRAMPercentage=50.0", "-XX:MinRAMPercentage=20.0", "-XX:+ExitOnOutOfMemoryError", "-jar", "/opt/shinyproxy/shinyproxy.jar", "--spring.jmx.enabled=false", "--spring.config.location=/opt/shinyproxy/application.yml"]

@@ -42,7 +42,7 @@ services:
     restart: always
 
   shinyproxy:
-    image: ghcr.io/kth-library/shinyproxy-kth
+    image: ghcr.io/kth-library/shinyproxy-kth:3.2.4
 #    ports:
 #      - "8080:8080"
     env_file: 
@@ -60,8 +60,7 @@ services:
     restart: always
 
   public:
-    image: ghcr.io/kth-library/shinyproxy-kth
-#    image: kthb/shinyproxy:2.6.0
+    image: ghcr.io/kth-library/shinyproxy-kth:3.2.4
 #    ports:
 #      - "8081:8080"
     env_file: 
